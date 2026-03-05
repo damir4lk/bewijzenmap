@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bewijzenmap — Damirel Zuhan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --surface-hover: #f5f5f7;
+    --border: #e5e5ea;
+    --border-hover: rgba(230, 0, 126, 0.35);
+    --text: #1d1d1f;
+    --text-dim: #86868b;
+    --accent: #E6007E;
+    --accent-2: #009cc8;
+    --accent-glow: rgba(230, 0, 126, 0.08);
+    --accent-glow-2: rgba(0, 156, 200, 0.08);
+    --gradient-1: #E6007E;
+    --gradient-2: #009cc8;
+    --radius: 14px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-hover: 0 12px 40px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+  }
+
+  body {
+    font-family: 'Figtree', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== NOISE OVERLAY ===== */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    position: relative;
+    padding: 80px 40px 60px;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -260px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 900px;
+    height: 600px;
+    background: radial-gradient(ellipse, rgba(230,0,126,0.07) 0%, rgba(0,156,200,0.04) 40%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-label {
+    display: inline-block;
+    font-family: 'Figtree', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-glow);
+    padding: 6px 16px;
+    border-radius: 100px;
+    border: 1px solid rgba(230, 0, 126, 0.15);
+    margin-bottom: 28px;
+  }
+
+  .hero h1 {
+    font-family: 'Figtree', sans-serif;
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 1.05rem;
+    color: var(--text-dim);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .hero-meta {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 36px;
+    flex-wrap: wrap;
+  }
+
+  .hero-meta .stat {
+    text-align: center;
+  }
+
+  .hero-meta .stat-num {
+    font-family: 'Figtree', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-meta .stat-label {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 2px;
+  }
+
+  /* ===== TABS ===== */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 36px;
+  }
+
+  .tab {
+    font-family: 'Figtree', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 10px 22px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab:hover {
+    border-color: var(--border-hover);
+    color: var(--accent);
+  }
+
+  .tab.active {
+    background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+    color: #fff;
+    border-color: transparent;
+  }
+
+  /* ===== SEARCH ===== */
+  .search-wrap {
+    max-width: 480px;
+    margin: 24px auto 0;
+    position: relative;
+  }
+
+  .search-wrap svg {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    width: 18px;
+    height: 18px;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-family: 'Figtree', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: var(--shadow);
+  }
+
+  .search-wrap input::placeholder { color: var(--text-dim); }
+  .search-wrap input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  /* ===== GRID ===== */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  .section-title {
+    font-family: 'Figtree', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+    padding-left: 4px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+
+  /* ===== CARD ===== */
+  .card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gradient-1), var(--gradient-2));
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .card:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  .card-num {
+    font-family: 'Figtree', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .card-name {
+    font-family: 'Figtree', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    line-height: 1.3;
+    color: var(--text);
+  }
+
+  .card-files {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .card-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 8px;
+    background: rgba(230, 0, 126, 0.06);
+    border: 1px solid rgba(230, 0, 126, 0.12);
+    color: var(--accent);
+    font-weight: 500;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .card-file:hover {
+    background: rgba(230, 0, 126, 0.12);
+    border-color: rgba(230, 0, 126, 0.3);
+    transform: translateY(-1px);
+  }
+
+  .card-file::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* Overig card-file items use accent-2 */
+  .card-overig .card-file {
+    background: rgba(0, 156, 200, 0.06);
+    border-color: rgba(0, 156, 200, 0.15);
+    color: var(--accent-2);
+  }
+
+  .card-overig .card-file:hover {
+    background: rgba(0, 156, 200, 0.12);
+    border-color: rgba(0, 156, 200, 0.3);
+  }
+
+  .card-overig .card-file::before {
+    background: var(--accent-2);
+  }
+
+  .card-arrow {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--accent-glow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: all 0.25s;
+  }
+
+  .card:hover .card-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .card-arrow svg {
+    width: 14px;
+    height: 14px;
+    color: var(--accent);
+  }
+
+  .card.empty {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .card.empty .card-name::after {
+    content: ' — geen bestanden';
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    font-weight: 400;
+  }
+
+  /* ===== OVERIG CARDS ===== */
+  .card-overig {
+    background: linear-gradient(135deg, rgba(230,0,126,0.03), rgba(0,156,200,0.03));
+  }
+
+  .card-overig .card-num { color: var(--accent-2); }
+
+  .card-type-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(0,156,200,0.1);
+    color: var(--accent-2);
+    width: fit-content;
+  }
+
+  /* ===== MODAL / OVERLAY ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.88);
+    z-index: 10000;
+    backdrop-filter: blur(12px);
+  }
+
+  .modal-overlay.active { display: flex; flex-direction: column; }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10010;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .modal-title {
+    font-family: 'Figtree', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .modal-close {
+    background: rgba(255,255,255,0.7);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 8px 16px;
+    font-family: 'Figtree', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .modal-close:hover {
+    background: var(--surface);
+    border-color: var(--border-hover);
+  }
+
+  .modal-body {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .modal-body iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #fff;
+  }
+
+  /* ===== IMAGE MODAL ===== */
+  .modal-body img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+    margin: auto;
+  }
+
+  .modal-body video {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+    margin: auto;
+  }
+
+  .modal-body.media-view {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    padding: 24px;
+  }
+
+  /* ===== RICH TEXT MODAL ===== */
+  .modal-body.rich-view {
+    overflow-y: auto;
+    background: var(--surface);
+    padding: 48px 56px;
+  }
+
+  .rich-content h2 {
+    font-family: 'Figtree', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .rich-content h3 {
+    font-family: 'Figtree', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent-2);
+    margin-top: 28px;
+    margin-bottom: 8px;
+  }
+
+  .rich-content p {
+    font-family: 'Figtree', sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  .rich-content .proto-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+    color: #fff;
+    font-family: 'Figtree', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(230, 0, 126, 0.2);
+  }
+
+  .rich-content .proto-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(230, 0, 126, 0.3);
+  }
+
+  .rich-content .proto-link svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* ===== MODAL NAV ARROWS ===== */
+  .modal-nav {
+    display: none;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .modal-nav.has-nav { display: flex; }
+
+  .modal-nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--text);
+  }
+
+  .modal-nav-btn:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-hover);
+    color: var(--accent);
+  }
+
+  .modal-nav-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .modal-counter {
+    font-family: 'Figtree', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    min-width: 48px;
+    text-align: center;
+  }
+
+  /* ===== HIDDEN ===== */
+  .hidden { display: none !important; }
+
+  /* ===== SECTION DIVIDER ===== */
+  .section-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 12px 0 28px;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    .hero { padding: 60px 20px 40px; }
+    .container { padding: 32px 16px 60px; }
+    .grid { grid-template-columns: 1fr; }
+    .hero-meta { gap: 20px; }
+    .tabs { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-label">BPV Bewijzenmap 2025–2026</div>
+  <h1>Damirel Zuhan</h1>
+  <p>Offertesjablonen en overige werkzaamheden tijdens mijn stage bij Catermonkey — Mediavormgever, Firda Heerenveen</p>
+  <div class="hero-meta">
+    <div class="stat">
+      <div class="stat-num">37</div>
+      <div class="stat-label">Projecten</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">39</div>
+      <div class="stat-label">Sjablonen</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">7</div>
+      <div class="stat-label">Overig</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">17</div>
+      <div class="stat-label">Weken</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-filter="all">Alles</div>
+    <div class="tab" data-filter="offertes">Offertesjablonen</div>
+    <div class="tab" data-filter="overig">Overig</div>
+  </div>
+
+  <div class="search-wrap">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+    <input type="text" id="search" placeholder="Zoek een bedrijf..." autocomplete="off">
+  </div>
+</div>
+
+<div class="container">
+  <div id="offertes-section">
+    <div class="section-title">Offertesjablonen</div>
+    <div class="grid" id="grid-offertes"></div>
+  </div>
+  <div id="overig-section" style="margin-top: 48px;">
+    <div class="section-title">Overige werkzaamheden</div>
+    <div class="grid" id="grid-overig"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-header">
+    <div class="modal-title" id="modal-title"></div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div class="modal-nav" id="modal-nav">
+        <button class="modal-nav-btn" id="nav-prev" onclick="navModal(-1)">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
+        </button>
+        <div class="modal-counter" id="modal-counter"></div>
+        <button class="modal-nav-btn" id="nav-next" onclick="navModal(1)">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+        </button>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕ Sluiten</button>
+    </div>
+  </div>
+  <div class="modal-body" id="modal-body"></div>
+</div>
+
+<script>
+const offertes = [
+  { num: "1", name: "Oefening Zjaar", folder: "1) oefening Zjaar", files: ["oefening Zjaar.html"] },
+  { num: "2", name: "Bosque", folder: "2) Bosque", files: ["Bosque.html"] },
+  { num: "3", name: "Catering Witteveen", folder: "3) Catering Witteveen", files: ["Catering Witteveen.html"] },
+  { num: "4", name: "Josjes Culinair", folder: "4) Josjes Culinair", files: ["Josjes Culinair.html"] },
+  { num: "5", name: "Ateljee G", folder: "5) Ateljee G", files: ["Ateljee G.html"] },
+  { num: "6", name: "YIP", folder: "6) YIP", files: ["YIP.html"] },
+  { num: "7", name: "Zaal Toon", folder: "7) Zaal Toon", files: ["zaal toon.html"] },
+  { num: "8", name: "Hof Ter Bellebroek", folder: "8) Hof Ter Bellebroek", files: ["Hof Ter Bellebroek.html"] },
+  { num: "9", name: "Tutta Italia", folder: "9) Tutta Italia", files: ["1) Tutta Italia Superiore.html", "2) Tutta Italia Esclusivio.html", "3) Tutta Italia Originale.html"], fileLabels: ["Superiore", "Esclusivio", "Originale"] },
+  { num: "10", name: "Proefwerk", folder: "10) Proefwerk", files: ["Proefwerk.html"] },
+  { num: "11", name: "Smaakmakers", folder: "11) Smaakmakers", files: ["Smaakmakers.html"] },
+  { num: "12", name: "Toko Kediri", folder: "12) Toko Kediri", files: ["Toko Kediri.html"] },
+  { num: "13", name: "Teverlani", folder: "13) Teverlani", files: ["Taverlani.html"] },
+  { num: "14", name: "Aardig", folder: "14) Aardig", files: ["Aardig.html"] },
+  { num: "15", name: "Salons Remington", folder: "15) Salons Remington", files: ["Salons Remington.html"] },
+  { num: "16", name: "Take Care Bites", folder: "16) Take Care Bites", files: ["Take Care Bites.html"] },
+  { num: "17", name: "Happy Days", folder: "17) Happy Days", files: ["Happy Days.html"] },
+  { num: "18", name: "CateringGenoot", folder: "18) CateringGenoot", files: ["CateringGenoot.html"] },
+  { num: "19", name: "Jan'Smaak", folder: "19) Jan'Smaak", files: ["Jan'Smaak.html"] },
+  { num: "20", name: "Princee Partyservice", folder: "20) Princee partyservice", files: ["Princee partyservice.html"] },
+  { num: "21", name: "La Solette", folder: "21) La Solette", files: ["La Solette.html"] },
+  { num: "22", name: "Urban Foods", folder: "22) Urban Foods", files: ["Urban Foods.html"] },
+  { num: "23", name: "Catering de Gelegenheid", folder: "23) Catering de Gelegenheid", files: ["Catering de Gelegenheid.html"] },
+  { num: "24", name: "Semplice e Buono", folder: "24) Semplice e Buono", files: ["Sempice e Buno.html"] },
+  { num: "25", name: "Lust Culinair", folder: "25) Lust Culinair", files: ["Lust Culinair.html"] },
+  { num: "26", name: "Marmite Catering & Events", folder: "26) Marmite Catering & Events", files: ["Marmite Catering & Events.html"] },
+  { num: "27", name: "Smits Culinary", folder: "27) Smits Culinary", files: ["Smits Culinary.html"] },
+  { num: "28", name: "Global Crusine", folder: "28) Global Crusine", files: ["Global Crusine.html"] },
+  { num: "29", name: "CulinAIR Inflight", folder: "29) CulinAIR inflight", files: ["CulinAIR inflight.html"] },
+  { num: "30", name: "Groot Eiland", folder: "30) groot eiland", files: ["groot eiland.html"] },
+  { num: "31", name: "Steam Catering", folder: "31) Steam", files: ["Steam Catering.html"] },
+  { num: "32", name: "Pizza Chef", folder: "32) Pizza Chef", files: ["Pizza Chef.html"] },
+  { num: "33", name: "Tabloo Bistroo", folder: "33) Tabloo Bistroo", files: ["Tabloo Bistroo.html"] },
+  { num: "34", name: "Smaakmesters", folder: "34) Smaakmesters", files: ["Smaakmesters.html"] },
+  { num: "35", name: "Michiel's Pizza", folder: "35) Michiel's Pizza", files: ["Michiel's Pizza.html"] },
+  { num: "36", name: "Van Es Catering", folder: "36) Van Es Catering", files: ["Van Es Catering.html"] },
+  { num: "37", name: "Prestigio", folder: "37) Prestigio", files: ["Prestigio.html"] },
+];
+
+const overig = [
+  { num: "1", name: "Hoogtepunten voor Instagram", folder: "1)Hoogtepunten voor catermonkey inst", type: "design", files: ["instagram screenshot.jpg"], mediaType: "image" },
+  { num: "2", name: "Inhaker voor Instagram", folder: "2) inhaker voor catermonkey inst", type: "video", files: ["video.mp4"], mediaType: "video" },
+  { num: "3", name: "Sjablonen voor Reel Posts", folder: "3) Sjablonen voor CaterMonkey reel posts", type: "design", files: ["1.png", "2.png", "3.png"], mediaType: "image" },
+  { num: "4", name: "Kerstkaart voor klanten", folder: "4) Kestkaart voor klanten van catermonkey", type: "design", files: ["voor.png", "achterkant.png"], mediaType: "image" },
+  { num: "5", name: "Instagram Reel — Met Marten", folder: "5) Reel voor catermonkey inst met Marten", type: "video", files: ["eindresultaat.mp4"], mediaType: "video" },
+  { num: "6", name: "Instagram Reel — Klanten Interview", folder: "6) Reel voor Catermonkey inst met klanten intervieuw", type: "video", files: ["Inst reel.mp4"], mediaType: "video" },
+  { num: "7", name: "Catermonkey AI Helper Concept", folder: "7) Catermonkey AI helper concept", type: "concept",
+    files: ["Concept", "promt.txt"],
+    items: [
+      { title: "Catermonkey AI Helper Concept", type: "richtext", path: "" },
+      { title: "Catermonkey AI Helper — Prompt", type: "text", path: "Bewijzenmap/Overig/7) Catermonkey AI helper concept/promt.txt" },
+    ]
+  },
+];
+
+const arrowSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25"/></svg>`;
+
+const gridOffertes = document.getElementById('grid-offertes');
+const gridOverig = document.getElementById('grid-overig');
+const searchEl = document.getElementById('search');
+let activeTab = 'all';
+
+// Modal navigation state
+let modalItems = [];  // array of {title, path, type}
+let modalIndex = 0;
+
+function typeLabel(t) {
+  const map = { concept: 'Concept', design: 'Design', video: 'Video' };
+  return map[t] || t;
+}
+
+function renderOffertes(filter = '') {
+  gridOffertes.innerHTML = '';
+  const lf = filter.toLowerCase();
+  offertes.forEach(c => {
+    if (lf && !c.name.toLowerCase().includes(lf) && !c.num.includes(lf)) return;
+    const empty = c.files.length === 0;
+    const card = document.createElement('div');
+    card.className = 'card' + (empty ? ' empty' : '');
+
+    let filesHtml = '';
+    if (c.files.length > 1) {
+      const labels = c.fileLabels || c.files.map(f => f.replace('.html', ''));
+      filesHtml = '<div class="card-files">' + c.files.map((f, i) => {
+        return `<div class="card-file" data-folder="${c.folder}" data-file="${f}" data-idx="${i}">${labels[i]}</div>`;
+      }).join('') + '</div>';
+    }
+
+    card.innerHTML = `
+      <div class="card-num">Project ${c.num}</div>
+      <div class="card-name">${c.name}</div>
+      ${filesHtml}
+      <div class="card-arrow">${arrowSvg}</div>
+    `;
+
+    if (!empty) {
+      const labels = c.fileLabels || c.files.map(f => f.replace('.html', ''));
+      const items = c.files.map((f, i) => ({
+        title: c.name + (c.files.length > 1 ? ' — ' + labels[i] : ''),
+        path: `Bewijzenmap/Offertes/${encodeURIComponent(c.folder)}/${encodeURIComponent(f)}`,
+        type: 'iframe'
+      }));
+
+      card.onclick = () => openModalWithNav(items, 0);
+
+      if (c.files.length > 1) {
+        card.querySelectorAll('.card-file').forEach(el => {
+          el.onclick = (e) => {
+            e.stopPropagation();
+            const idx = parseInt(el.dataset.idx);
+            openModalWithNav(items, idx);
+          };
+        });
+      }
+    }
+    gridOffertes.appendChild(card);
+  });
+}
+
+function renderOverig(filter = '') {
+  gridOverig.innerHTML = '';
+  const lf = filter.toLowerCase();
+  overig.forEach((c, i) => {
+    if (lf && !c.name.toLowerCase().includes(lf)) return;
+    const card = document.createElement('div');
+    card.className = 'card card-overig';
+
+    let filesHtml = '';
+    if (c.files.length > 1) {
+      filesHtml = '<div class="card-files">' + c.files.map((f, fi) => {
+        return `<div class="card-file" data-idx="${fi}">${f}</div>`;
+      }).join('') + '</div>';
+    }
+
+    card.innerHTML = `
+      <div class="card-num">Project ${c.num}</div>
+      <div class="card-name">${c.name}</div>
+      <div class="card-type-badge">${typeLabel(c.type)}</div>
+      ${filesHtml}
+      <div class="card-arrow">${arrowSvg}</div>
+    `;
+
+    // Build items — use custom items if provided, else auto-generate
+    let items;
+    if (c.items) {
+      items = c.items;
+    } else {
+      items = c.files.map(f => ({
+        title: c.name + (c.files.length > 1 ? ' — ' + f : ''),
+        path: `Bewijzenmap/Overig/${encodeURIComponent(c.folder)}/${encodeURIComponent(f)}`,
+        type: c.mediaType
+      }));
+    }
+
+    card.onclick = () => openModalWithNav(items, 0);
+
+    if (c.files.length > 1) {
+      card.querySelectorAll('.card-file').forEach(el => {
+        el.onclick = (e) => {
+          e.stopPropagation();
+          const idx = parseInt(el.dataset.idx);
+          openModalWithNav(items, idx);
+        };
+      });
+    }
+
+    gridOverig.appendChild(card);
+  });
+}
+
+// ===== MODAL WITH NAVIGATION =====
+function openModalWithNav(items, startIdx) {
+  modalItems = items;
+  modalIndex = startIdx;
+  showModalItem();
+  document.getElementById('modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  // Show/hide nav
+  const nav = document.getElementById('modal-nav');
+  if (items.length > 1) {
+    nav.classList.add('has-nav');
+  } else {
+    nav.classList.remove('has-nav');
+  }
+}
+
+function showModalItem() {
+  const item = modalItems[modalIndex];
+  document.getElementById('modal-title').textContent = item.title;
+  const body = document.getElementById('modal-body');
+
+  if (item.type === 'richtext') {
+    body.className = 'modal-body rich-view';
+    body.innerHTML = `<div class="rich-content">
+      <h2>Kiko — AI Assistent voor CaterMonkey</h2>
+      <h3>Het concept</h3>
+      <p>Ik heb een concept ontwikkeld voor een virtuele assistent genaamd <strong>Kiko</strong> binnen het CaterMonkey-systeem. Kiko is een vrolijke aap die gebruikers begeleidt bij het leren en werken met de applicatie.</p>
+      <h3>Hoe werkt het?</h3>
+      <p>Bij je eerste keer inloggen in CaterMonkey word je begeleid door dialoogvensters van Kiko, met een visualisatie van een aap als assistent. Tijdens de onboarding (die je kunt overslaan) zijn deze pop-up dialoogvensters nog acceptabel, maar tijdens het dagelijkse werk niet. Daarom komen alle tips en suggesties van Kiko terecht in een apart menu rechtsonder in het scherm.</p>
+      <h3>Kiko's karakter</h3>
+      <p>Speels, maar met mate. Wanneer het nodig is, schakelt hij over naar een serieuze modus. Af en toe maakt hij een grapje. Hij praat als een vriend, niet als een bot. Geduldig met beginners. Niet opdringerig, niet belerend. Als hij iets niet weet, geeft hij dat eerlijk toe. Moedigt aan zonder nep te zijn. Een beetje brutaal, maar altijd aardig.</p>
+      <h3>Techniek</h3>
+      <p>Kiko draait waarschijnlijk op ChatGPT 4.1 mini — een model dat betaalbaar genoeg is en slim genoeg voor dit doel.</p>
+      <h3>Probeer het prototype</h3>
+      <p>Via onderstaande link kun je het interactieve prototype openen en het idee in de praktijk zien.</p>
+      <a class="proto-link" href="https://www.figma.com/proto/XZIToUmO2nJ2lGQ0HkhiKK/Cat?page-id=0%3A1&node-id=22-18&p=f&viewport=443%2C252%2C1.22&t=Y6D7XJcQ66km95AG-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=22%3A18" target="_blank" rel="noopener">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+        Open Figma Prototype
+      </a>
+    </div>`;
+  } else if (item.type === 'video') {
+    body.className = 'modal-body media-view';
+    body.innerHTML = `<video controls autoplay src="${item.path}" style="max-width:100%;max-height:100%;border-radius:8px;"></video>`;
+  } else if (item.type === 'image') {
+    body.className = 'modal-body media-view';
+    body.innerHTML = `<img src="${item.path}" alt="${item.title}" style="max-width:100%;max-height:100%;border-radius:8px;">`;
+  } else if (item.type === 'text') {
+    body.className = 'modal-body';
+    body.innerHTML = `<iframe src="${item.path}"></iframe>`;
+  } else {
+    body.className = 'modal-body';
+    body.innerHTML = `<iframe src="${item.path}" sandbox="allow-same-origin"></iframe>`;
+  }
+
+  // Update counter
+  document.getElementById('modal-counter').textContent = `${modalIndex + 1} / ${modalItems.length}`;
+}
+
+function navModal(dir) {
+  modalIndex = (modalIndex + dir + modalItems.length) % modalItems.length;
+  showModalItem();
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+  document.getElementById('modal-body').innerHTML = '';
+  document.body.style.overflow = '';
+  modalItems = [];
+  modalIndex = 0;
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (!document.getElementById('modal').classList.contains('active')) return;
+  if (modalItems.length > 1) {
+    if (e.key === 'ArrowLeft') navModal(-1);
+    if (e.key === 'ArrowRight') navModal(1);
+  }
+});
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeTab = tab.dataset.filter;
+    updateView();
+  });
+});
+
+function updateView() {
+  const f = searchEl.value;
+  const offSec = document.getElementById('offertes-section');
+  const ovSec = document.getElementById('overig-section');
+
+  if (activeTab === 'all' || activeTab === 'offertes') {
+    offSec.style.display = '';
+    renderOffertes(f);
+  } else {
+    offSec.style.display = 'none';
+  }
+
+  if (activeTab === 'all' || activeTab === 'overig') {
+    ovSec.style.display = '';
+    renderOverig(f);
+  } else {
+    ovSec.style.display = 'none';
+  }
+}
+
+searchEl.addEventListener('input', () => updateView());
+updateView();
+</script>
+</body>
+</html>

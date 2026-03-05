@@ -1,0 +1,11 @@
+Het concept
+Ik heb een concept ontwikkeld voor een virtuele assistent genaamd Kiko binnen het CaterMonkey-systeem. Kiko is een vrolijke aap die gebruikers begeleidt bij het leren en werken met de applicatie.
+Hoe werkt het?
+Bij je eerste keer inloggen in CaterMonkey word je begeleid door dialoogvensters van Kiko, met een visualisatie van een aap als assistent. Tijdens de onboarding (die je kunt overslaan) zijn deze pop-up dialoogvensters nog acceptabel, maar tijdens het dagelijkse werk niet. Daarom komen alle tips en suggesties van Kiko terecht in een apart menu rechtsonder in het scherm.
+Kiko's karakter
+Speels, maar met mate. Wanneer het nodig is, schakelt hij over naar een serieuze modus. Af en toe maakt hij een grapje. Hij praat als een vriend, niet als een bot. Geduldig met beginners. Niet opdringerig, niet belerend. Als hij iets niet weet, geeft hij dat eerlijk toe. Moedigt aan zonder nep te zijn. Een beetje brutaal, maar altijd aardig.
+Techniek
+Kiko draait waarschijnlijk op ChatGPT 4.1 mini — een model dat betaalbaar genoeg is en slim genoeg voor dit doel.
+Zelf uitproberen
+Via onderstaande link kun je het interactieve prototype openen en mijn idee in de praktijk zien: https://www.figma.com/proto/XZIToUmO2nJ2lGQ0HkhiKK/Cat?page-id=0%3A1&node-id=22-18&p=f&viewport=443%2C252%2C1.22&t=Y6D7XJcQ66km95AG-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=22%3A18
+Wil je nu al met Kiko chatten? In de bijlage vind je een uitgebreide prompt die je kunt kopieren en plakken in GPT. Je kunt hem vragen stellen over alles wat met het CaterMonkey-systeem te maken heeft. GPT 4.1 mini is niet openbaar beschikbaar, maar elke gewone GPT-versie levert een vergelijkbaar resultaat op.
